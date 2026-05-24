@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
 const services = [
@@ -100,6 +100,17 @@ const projects = [
     logo: '/solutions_logo_transparent.webp',
     logoAlt: '/RunFoodLogo.png',
   },
+  {
+    title: 'Portafolio Web - Amelia Padilla (Creadora de Contenido & UGC)',
+    category: 'Portafolio / Web',
+    description: 'Landing page minimalista y de alto rendimiento diseñada a medida para una destacada creadora de contenido. Desarrollada con un enfoque mobile-first, la plataforma integra de forma fluida galerías interactivas para material audiovisual, secciones dinámicas de analítica y métricas de redes sociales, y un layout optimizado para maximizar la conversión de marcas aliadas.',
+    result: 'Portafolio optimizado para conversión y rendimiento mobile-first.',
+    highlights: ['Diseño Minimalista', 'Analíticas Integradas', 'Mobile First'],
+    href: 'https://portafolio-ame-padilla.vercel.app/',
+    accent: 'blue',
+    type: 'portfolio',
+    logo: '/Portafolio_Amelia_Padilla.png',
+  },
 ];
 
 const faqs = [
@@ -192,6 +203,59 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('inicio');
   const [isRedirecting, setIsRedirecting] = useState(false);
+
+  // Carousel scroller reference and click handlers for "Servicios"
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollPrev = () => {
+    if (scrollerRef.current) {
+      const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
+      const gap = 20;
+      scrollerRef.current.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+    }
+  };
+
+  const scrollNext = () => {
+    if (scrollerRef.current) {
+      const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
+      const gap = 20;
+      scrollerRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+    }
+  };
+
+  // Carousel scroller reference and click handlers for "Proyectos"
+  const projectsScrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollProjectsPrev = () => {
+    if (projectsScrollerRef.current) {
+      const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
+      const gap = 30;
+      projectsScrollerRef.current.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+    }
+  };
+
+  const scrollProjectsNext = () => {
+    if (projectsScrollerRef.current) {
+      const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
+      const gap = 30;
+      projectsScrollerRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+    }
+  };
+
+  // Carousel scroller reference and active step state for "Proceso" mobile carousel
+  const [activeStep, setActiveStep] = useState(0);
+  const stepsScrollerRef = useRef<HTMLDivElement>(null);
+
+  const handleStepsScroll = () => {
+    if (stepsScrollerRef.current) {
+      const scroller = stepsScrollerRef.current;
+      const scrollLeft = scroller.scrollLeft;
+      const cardWidth = scroller.querySelector('.step')?.getBoundingClientRect().width || 280;
+      const gap = 20;
+      const stepIndex = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveStep(Math.min(5, Math.max(0, stepIndex)));
+    }
+  };
 
   // Form state hooks
   const [name, setName] = useState('');
@@ -318,8 +382,9 @@ export default function Home() {
     <main>
       <header className="nav">
         <a className="brand" href="#inicio" aria-label="Ir al inicio">
-          <span>JV</span>
-          <strong>JV Studio</strong>
+          <span className="brandMark">
+            <Image src="/jv-studio-logo.png" alt="" width={180} height={52} priority />
+          </span>
         </a>
         <nav>
           <a href="#inicio" className={activeSection === 'inicio' ? 'active' : ''}>Inicio</a>
@@ -361,11 +426,6 @@ export default function Home() {
           <p className="lead">
             Hagamos que su presencia digital también lo sea.
           </p>
-          <div className="heroProof" aria-label="Beneficios principales">
-            <span>Web profesional</span>
-            <span>Automatización útil</span>
-            <span>Entrega clara</span>
-          </div>
           <div className="heroActions">
             <a 
               className="button primary" 
@@ -380,72 +440,7 @@ export default function Home() {
             <a className="simpleLink" href="#proyectos">Ver proyectos <span>→</span></a>
           </div>
         </div>
-        <div className="heroMockupWrap" aria-hidden="true">
-          <div className="heroGlow" />
-          <div className="browserMockup">
-            <div className="browserTop">
-              <span className="dot-red" />
-              <span className="dot-yellow" />
-              <span className="dot-green" />
-            </div>
-            
-            {/* Mini Nav Bar */}
-            <div className="mockNav">
-              <span className="mockBrand">JV</span>
-              <div className="mockNavLinks">
-                <span>Servicios</span>
-                <span>Portafolio</span>
-                <span className="active">Panel</span>
-              </div>
-            </div>
-            
-            {/* Mock Hero Section */}
-            <div className="mockHero">
-              <div className="mockHeroCopy">
-                <h3 className="mockTitle">Diseño web y automatización.</h3>
-                <p className="mockDesc">Transformamos ideas en plataformas de alta conversión.</p>
-                <div className="mockCtaButton">Comenzar</div>
-              </div>
-              <div className="mockPreviewCard">
-                <div className="mockPreviewHeader">
-                  <span>Rendimiento Mensual</span>
-                  <span className="mockStat">+48.2%</span>
-                </div>
-                <div className="mockChartContainer">
-                  <svg className="mockChartSvg" viewBox="0 0 100 40" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#d6ff72" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#d6ff72" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M0,35 Q15,10 30,22 T60,5 T90,15 L100,8 L100,40 L0,40 Z" fill="url(#chartGlow)" />
-                    <path d="M0,35 Q15,10 30,22 T60,5 T90,15 L100,8" fill="none" stroke="#d6ff72" strokeWidth="2.5" strokeLinecap="round" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            {/* Mock Bottom Cards */}
-            <div className="mockCards">
-              <div className="miniCard">
-                <span className="miniCardLabel">Visitas</span>
-                <strong className="miniCardValue">12,482</strong>
-                <span className="miniCardTrend">+18%</span>
-              </div>
-              <div className="miniCard">
-                <span className="miniCardLabel">Leads</span>
-                <strong className="miniCardValue">1,402</strong>
-                <span className="miniCardTrend">+24%</span>
-              </div>
-              <div className="miniCard">
-                <span className="miniCardLabel">Ventas</span>
-                <strong className="miniCardValue">$8,420</strong>
-                <span className="miniCardTrend">+32%</span>
-              </div>
-            </div>
-          </div>
-        </div>
+
       </section>
 
       <div className="marquee" aria-hidden="true">
@@ -483,11 +478,25 @@ export default function Home() {
       </section>
 
       <section className="section servicesSection" id="servicios">
-        <div className="sectionHead">
+        <div className="sectionHead servicesHead">
           <p className="eyebrow">Servicios</p>
-          <h2>Servicios diseñados para negocios que quieren crecer con orden.</h2>
+          <div className="servicesHeadMain">
+            <h2>Servicios diseñados para negocios que quieren crecer con orden.</h2>
+            <div className="carouselControls">
+              <button className="carouselBtn prev" onClick={scrollPrev} aria-label="Anterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button className="carouselBtn next" onClick={scrollNext} aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="serviceGrid">
+        <div className="serviceGrid" ref={scrollerRef}>
           {services.map((service) => (
             <article className="serviceCard" key={service.tag} onMouseMove={handleMouseMove}>
               <div className="serviceTop">
@@ -554,7 +563,7 @@ export default function Home() {
           <p className="eyebrow">Proceso</p>
           <h2>Cómo trabajo</h2>
         </div>
-        <div className="steps">
+        <div className="steps" ref={stepsScrollerRef} onScroll={handleStepsScroll}>
           {process.map(([title, text], index) => (
             <article className="step" key={title}>
               <span>{String(index + 1).padStart(2, '0')}</span>
@@ -563,11 +572,31 @@ export default function Home() {
             </article>
           ))}
         </div>
+        
+        {/* Indicadores visuales para móviles y tablets */}
+        <div className="carouselIndicators">
+          {process.map((_, index) => (
+            <span 
+              key={index} 
+              className={`indicatorDot ${activeStep === index ? 'active' : ''}`}
+              onClick={() => {
+                if (stepsScrollerRef.current) {
+                  const cardWidth = stepsScrollerRef.current.querySelector('.step')?.getBoundingClientRect().width || 280;
+                  const gap = 20;
+                  stepsScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
+                }
+              }}
+              aria-label={`Ir al paso ${index + 1}`}
+            />
+          ))}
+        </div>
       </section>
 
       <section className="section personSection">
         <div className="personCard">
-          <div className="avatar" aria-hidden="true">JV</div>
+          <div className="avatar" aria-hidden="true">
+            <Image src="/Juan_EstebanVivero.jpg" alt="Juan Esteban Vivero" width={120} height={120} />
+          </div>
           <div>
             <p className="eyebrow">Quién está detrás</p>
             <h2>Juan Esteban Vivero</h2>
@@ -582,23 +611,37 @@ export default function Home() {
       </section>
 
       <section className="section projectsSection" id="proyectos">
-        <div className="sectionHead">
+        <div className="sectionHead projectsHead">
           <p className="eyebrow">Proyectos</p>
-          <div>
-            <h2>Proyectos</h2>
-            <p className="sectionIntro">
-              Soluciones digitales a la medida, pensadas para que cada negocio comunique mejor, atienda mejor y venda con más claridad.
-            </p>
+          <div className="projectsHeadMain">
+            <div>
+              <h2>Proyectos</h2>
+              <p className="sectionIntro">
+                Soluciones digitales a la medida, pensadas para que cada negocio comunique mejor, atienda mejor y venda con más claridad.
+              </p>
+            </div>
+            <div className="carouselControls">
+              <button className="carouselBtn prev" onClick={scrollProjectsPrev} aria-label="Anterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <button className="carouselBtn next" onClick={scrollProjectsNext} aria-label="Siguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-        <div className="projectGrid">
+        <div className="projectCarousel" ref={projectsScrollerRef}>
           {projects.map((project) => (
             <article className="projectCard" key={project.title}>
               <div 
                 className={`projectThumb ${project.accent} ${project.type}`} 
                 aria-label={`Visualización de ${project.title}`}
               >
-                <div className="projectLogoWrapper">
+                <div className={`projectLogoWrapper ${project.type === 'portfolio' ? 'portfolioWrapper' : ''}`}>
                   {project.logoAlt ? (
                     <div className="logo-container">
                       <Image 
@@ -618,15 +661,19 @@ export default function Home() {
                         priority={true}
                       />
                     </div>
-                  ) : (
+                  ) : project.logo ? (
                     <Image 
                       src={project.logo} 
                       alt={`${project.title} Logo`} 
-                      className="plateLogo"
-                      width={360}
-                      height={120}
+                      className={project.type === 'portfolio' ? 'fullPreviewImage' : 'plateLogo'}
+                      width={project.type === 'portfolio' ? 600 : 360}
+                      height={project.type === 'portfolio' ? 340 : 120}
                       priority={true}
                     />
+                  ) : (
+                    <div className="textLogo" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.1 }}>
+                      {project.title.split(' - ')[1] || project.title}
+                    </div>
                   )}
                 </div>
               </div>
@@ -705,7 +752,9 @@ export default function Home() {
 
       <footer className="footer">
         <div className="footer-col">
-          <span className="footerBrand">JV Studio</span>
+          <span className="footerBrand">
+            <Image src="/jv-studio-logo.png" alt="" width={180} height={52} />
+          </span>
           <p>Diseño web, automatización y presencia digital para negocios modernos.</p>
         </div>
         <div className="footer-col">
