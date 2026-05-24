@@ -80,7 +80,9 @@ const projects = [
   {
     title: 'Click Line Security',
     category: 'Seguridad',
-    description: 'Plataforma web corporativa desarrollada para una empresa de seguridad electrónica y monitoreo. El proyecto presenta servicios como CCTV, alarmas, rastreo GPS, cercas eléctricas y sistemas de seguridad para hogares y negocios, con un diseño moderno enfocado en transmitir confianza y profesionalismo.',
+    description: 'Sitio corporativo para una empresa de seguridad electrónica y monitoreo, diseñado para presentar servicios críticos con una imagen sólida y confiable.',
+    result: 'Arquitectura clara para CCTV, alarmas, GPS y seguridad residencial/comercial.',
+    highlights: ['Confianza visual', 'Servicios claros', 'CTA directo'],
     href: 'https://clickline.mobi/security/index.html',
     accent: 'rose',
     type: 'security',
@@ -89,12 +91,14 @@ const projects = [
   {
     title: 'Click Line Solutions / RunFood App',
     category: 'Soluciones / POS',
-    description: 'Plataforma tecnológica desarrollada para presentar soluciones digitales y automatización para negocios. Dentro del proyecto se incluye RunFood App, un sistema POS para restaurantes y negocios de comida que permite gestionar ventas, inventario, pedidos, facturación y reportes en tiempo real desde una interfaz rápida y moderna.',
+    description: 'Plataforma para mostrar soluciones digitales y RunFood App, un POS orientado a restaurantes y negocios de comida.',
+    result: 'Presentación enfocada en ventas, inventario, pedidos, facturación y reportes.',
+    highlights: ['Producto SaaS', 'Automatización', 'Reportes'],
     href: 'https://clickline.mobi/solutions/index.html',
     accent: 'gold',
     type: 'solutions',
-    logo: '/solutions_logo_transparent-mobile.webp',
-    logoAlt: '/RunFoodLogo-mobile.webp',
+    logo: '/solutions_logo_transparent.webp',
+    logoAlt: '/RunFoodLogo.png',
   },
 ];
 
@@ -357,6 +361,11 @@ export default function Home() {
           <p className="lead">
             Hagamos que su presencia digital también lo sea.
           </p>
+          <div className="heroProof" aria-label="Beneficios principales">
+            <span>Web profesional</span>
+            <span>Automatización útil</span>
+            <span>Entrega clara</span>
+          </div>
           <div className="heroActions">
             <a 
               className="button primary" 
@@ -527,20 +536,20 @@ export default function Home() {
       </section>
 
       <section className="section" id="por-que">
-        <div className="sectionHead" style={{ marginBottom: 0 }}>
+        <div className="sectionHead whyHead">
           <p className="eyebrow">Por qué JV Studio</p>
           <div>
-            <h2 style={{ fontSize: 'clamp(32px, 5vw, 54px)', fontWeight: 800, lineHeight: 1.1, color: 'var(--ink)', marginBottom: '24px', textTransform: 'none', letterSpacing: '-0.02em' }}>
+            <h2 className="whyTitle">
               No hago páginas genéricas.
             </h2>
-            <p style={{ fontSize: 'clamp(16px, 2.2vw, 22px)', lineHeight: 1.6, color: 'var(--muted)', fontFamily: 'var(--font-family)', margin: 0, fontWeight: 450, maxWidth: '760px' }}>
+            <p className="whyText">
               Cada proyecto tiene una intención clara: que tu negocio se vea profesional, funcione mejor y consiga más clientes. Diseño limpio, procesos útiles y tecnología que no complica.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="section reveal" id="proceso">
+      <section className="section processSection reveal" id="proceso">
         <div className="sectionHead">
           <p className="eyebrow">Proceso</p>
           <h2>Cómo trabajo</h2>
@@ -577,14 +586,14 @@ export default function Home() {
           <p className="eyebrow">Proyectos</p>
           <div>
             <h2>Proyectos</h2>
-            <p style={{ color: 'var(--muted)', marginTop: '12px', fontSize: '16px', lineHeight: 1.5 }}>
-              Soluciones digitales y plataformas web a la medida diseñadas para potenciar y optimizar distintos tipos de negocio.
+            <p className="sectionIntro">
+              Soluciones digitales a la medida, pensadas para que cada negocio comunique mejor, atienda mejor y venda con más claridad.
             </p>
           </div>
         </div>
-        <div className="cards" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', maxWidth: '1080px', margin: '0 auto', width: '100%' }}>
+        <div className="projectGrid">
           {projects.map((project) => (
-            <article className="projectCard" key={project.title} style={{ maxWidth: '500px', margin: '0 auto', width: '100%' }}>
+            <article className="projectCard" key={project.title}>
               <div 
                 className={`projectThumb ${project.accent} ${project.type}`} 
                 aria-label={`Visualización de ${project.title}`}
@@ -598,7 +607,6 @@ export default function Home() {
                         className="rotating-logo logo-1"
                         width={360}
                         height={120}
-                        style={{ objectFit: 'contain', filter: 'none' }}
                         priority={true}
                       />
                       <Image 
@@ -607,7 +615,6 @@ export default function Home() {
                         className="rotating-logo logo-2"
                         width={360}
                         height={120}
-                        style={{ objectFit: 'contain', filter: 'none' }}
                         priority={true}
                       />
                     </div>
@@ -618,7 +625,6 @@ export default function Home() {
                       className="plateLogo"
                       width={360}
                       height={120}
-                      style={{ objectFit: 'contain' }}
                       priority={true}
                     />
                   )}
@@ -627,6 +633,15 @@ export default function Home() {
               <span>Proyecto / {project.category}</span>
               <h3>{project.title}</h3>
               <p>{project.description}</p>
+              <div className="projectResult">
+                <strong>Impacto</strong>
+                <span>{project.result}</span>
+              </div>
+              <div className="projectTags">
+                {project.highlights.map((item) => (
+                  <span key={item}>{item}</span>
+                ))}
+              </div>
               <div className="projectAction">
                 <a 
                   className={`projectButton ${project.accent}`} 
@@ -642,8 +657,7 @@ export default function Home() {
         </div>
         <div className="centerAction">
           <button 
-            className="button primary" 
-            style={{ cursor: 'pointer' }}
+            className="button primary"
             onClick={() => openTally()}
           >
             Solicitar diagnóstico gratuito
@@ -666,23 +680,21 @@ export default function Home() {
       <section className="cta" id="contacto">
         <div className="cta-box">
           <h2>Tu negocio merece verse tan profesional como el servicio que das.</h2>
-          <p style={{ marginTop: '16px' }}>Construyamos una presencia digital clara, moderna y funcional para que más clientes confíen en tu negocio y cierres tratos ágilmente.</p>
-          <div className="heroActions" style={{ justifyContent: 'center', marginTop: '24px' }}>
+          <p className="ctaText">Construyamos una presencia digital clara, moderna y funcional para que más clientes confíen en tu negocio y cierres tratos ágilmente.</p>
+          <div className="heroActions ctaActions">
             <button 
-              className="button primary" 
-              style={{ cursor: 'pointer' }}
+              className="button primary"
               onClick={() => openTally()}
             >
               Solicitar diagnóstico
             </button>
             <a 
-              className="button ghost" 
+              className="button ghost whatsappButton" 
               href="https://wa.me/593984937364?text=Hola%20Juan%2C%20quiero%20hablar%20sobre%20el%20diagn%C3%B3stico%20de%20mi%20negocio%20de%20JV%20Studio" 
               target="_blank" 
               rel="noopener noreferrer"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#25D366', verticalAlign: 'middle' }}>
+              <svg className="whatsappIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.704 1.459h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
               </svg>
               Hablar por WhatsApp
@@ -693,7 +705,7 @@ export default function Home() {
 
       <footer className="footer">
         <div className="footer-col">
-          <span style={{ fontWeight: 800, fontSize: '14px', letterSpacing: '.12em', color: 'var(--ink)' }}>JV Studio</span>
+          <span className="footerBrand">JV Studio</span>
           <p>Diseño web, automatización y presencia digital para negocios modernos.</p>
         </div>
         <div className="footer-col">
