@@ -101,15 +101,37 @@ const projects = [
     logoAlt: '/RunFoodLogo.png',
   },
   {
-    title: 'Portafolio Web - Amelia Padilla (Creadora de Contenido & UGC)',
+    title: 'Portafolio Web — Amelia Padilla',
     category: 'Portafolio / Web',
-    description: 'Landing page minimalista y de alto rendimiento diseñada a medida para una destacada creadora de contenido. Desarrollada con un enfoque mobile-first, la plataforma integra de forma fluida galerías interactivas para material audiovisual, secciones dinámicas de analítica y métricas de redes sociales, y un layout optimizado para maximizar la conversión de marcas aliadas.',
-    result: 'Portafolio optimizado para conversión y rendimiento mobile-first.',
+    description: 'Landing page minimalista y optimizada para una creadora de contenido, enfocada en presentar su trabajo, métricas y colaboraciones de forma clara y profesional.',
+    result: 'Portafolio optimizado para rendimiento y conversión mobile-first.',
     highlights: ['Diseño Minimalista', 'Analíticas Integradas', 'Mobile First'],
     href: 'https://portafolio-ame-padilla.vercel.app/',
     accent: 'blue',
     type: 'portfolio',
     logo: '/Portafolio_Amelia_Padilla.png',
+  },
+  {
+    title: 'NatuPet',
+    category: 'Marca / Web',
+    description: 'Sitio web para una marca enfocada en bienestar animal, con una presencia visual limpia, natural y cercana.',
+    result: 'Identidad digital clara para presentar la marca y conectar con clientes desde el primer vistazo.',
+    highlights: ['Marca natural', 'Diseño limpio', 'Presencia web'],
+    href: 'https://natu-pet.vercel.app/#/',
+    accent: 'green',
+    type: 'natupet',
+    logo: '/NatuPet.png',
+  },
+  {
+    title: 'La Mila',
+    category: 'Restaurante / Web',
+    description: 'Presencia digital para un negocio gastronómico, diseñada para reforzar marca, confianza y recordación visual.',
+    result: 'Sitio directo y visual para comunicar la identidad del restaurante y facilitar el contacto.',
+    highlights: ['Identidad gastronómica', 'Marca memorable', 'Acceso rápido'],
+    href: 'https://lamila.vercel.app/',
+    accent: 'amber',
+    type: 'lamila',
+    logo: '/LaMila.png',
   },
 ];
 
@@ -204,43 +226,23 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('inicio');
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Carousel scroller reference and click handlers for "Servicios"
+  // Carousel scroller reference and active state for "Servicios"
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const [activeService, setActiveService] = useState(0);
 
-  const scrollPrev = () => {
+  const handleServiceScroll = () => {
     if (scrollerRef.current) {
-      const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
+      const scroller = scrollerRef.current;
+      const scrollLeft = scroller.scrollLeft;
+      const cardWidth = scroller.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
       const gap = 20;
-      scrollerRef.current.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+      const idx = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveService(Math.min(services.length - 1, Math.max(0, idx)));
     }
   };
 
-  const scrollNext = () => {
-    if (scrollerRef.current) {
-      const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
-      const gap = 20;
-      scrollerRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
-    }
-  };
-
-  // Carousel scroller reference and click handlers for "Proyectos"
+  // Carousel scroller reference for "Proyectos"
   const projectsScrollerRef = useRef<HTMLDivElement>(null);
-
-  const scrollProjectsPrev = () => {
-    if (projectsScrollerRef.current) {
-      const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
-      const gap = 30;
-      projectsScrollerRef.current.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
-    }
-  };
-
-  const scrollProjectsNext = () => {
-    if (projectsScrollerRef.current) {
-      const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
-      const gap = 30;
-      projectsScrollerRef.current.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
-    }
-  };
 
   // Carousel scroller reference and active step state for "Proceso" mobile carousel
   const [activeStep, setActiveStep] = useState(0);
@@ -254,6 +256,35 @@ export default function Home() {
       const gap = 20;
       const stepIndex = Math.round(scrollLeft / (cardWidth + gap));
       setActiveStep(Math.min(5, Math.max(0, stepIndex)));
+    }
+  };
+
+  // Carousel scroller reference and active state for "Por qué JV Studio" (Diferenciadores) mobile carousel
+  const [activeWhy, setActiveWhy] = useState(0);
+  const whyScrollerRef = useRef<HTMLDivElement>(null);
+
+  const handleWhyScroll = () => {
+    if (whyScrollerRef.current) {
+      const scroller = whyScrollerRef.current;
+      const scrollLeft = scroller.scrollLeft;
+      const cardWidth = scroller.querySelector('.differentiatorCard')?.getBoundingClientRect().width || 280;
+      const gap = 16;
+      const whyIndex = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveWhy(Math.min(2, Math.max(0, whyIndex)));
+    }
+  };
+
+  // Carousel scroller active state and listener for "Proyectos"
+  const [activeProject, setActiveProject] = useState(0);
+
+  const handleProjectsScroll = () => {
+    if (projectsScrollerRef.current) {
+      const scroller = projectsScrollerRef.current;
+      const scrollLeft = scroller.scrollLeft;
+      const cardWidth = scroller.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
+      const gap = 30;
+      const projectIndex = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveProject(Math.min(projects.length - 1, Math.max(0, projectIndex)));
     }
   };
 
@@ -293,6 +324,26 @@ export default function Home() {
 
     return () => observer.disconnect();
   }, []);
+
+  // IntersectionObserver para animaciones de reveal al hacer scroll
+  useEffect(() => {
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+    reveals.forEach((el) => revealObserver.observe(el));
+    return () => revealObserver.disconnect();
+  }, []);
+
+
 
   // Escuchador de Mouse para el Halo de Luz Interactivo (Cursor Glow)
   const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -419,7 +470,7 @@ export default function Home() {
         </a>
       </nav>
 
-      <section className="hero" id="inicio">
+      <section className="hero heroSplit" id="inicio">
         <div className="heroCopy">
           <p className="eyebrow">JV Studio / Ambato, Ecuador</p>
           <h1>Tu negocio ya es bueno.</h1>
@@ -438,6 +489,77 @@ export default function Home() {
               Solicitar diagnóstico
             </a>
             <a className="simpleLink" href="#proyectos">Ver proyectos <span>→</span></a>
+          </div>
+        </div>
+
+        {/* Hero browser mockup — dashboard original */}
+        <div className="heroMockupWrap" aria-hidden="true">
+          <div className="heroGlow" />
+          <div className="browserMockup">
+            {/* Browser chrome */}
+            <div className="browserTop">
+              <span className="dot-red" />
+              <span className="dot-yellow" />
+              <span className="dot-green" />
+            </div>
+
+            {/* Mock Nav */}
+            <div className="mockNav">
+              <span className="mockBrand">
+                <Image src="/jv-studio-logo.png" alt="" width={120} height={35} />
+              </span>
+              <div className="mockNavLinks">
+                <span>Servicios</span>
+                <span>Portafolio</span>
+                <span className="active">Panel</span>
+              </div>
+            </div>
+
+            {/* Mock Hero Section */}
+            <div className="mockHero">
+              <div className="mockHeroCopy">
+                <h3 className="mockTitle">Diseño web y automatización.</h3>
+                <p className="mockDesc">Transformamos ideas en plataformas de alta conversión.</p>
+                <div className="mockCtaButton">Comenzar</div>
+              </div>
+              <div className="mockPreviewCard">
+                <div className="mockPreviewHeader">
+                  <span>Rendimiento Mensual</span>
+                  <span className="mockStat">+48.2%</span>
+                </div>
+                <div className="mockChartContainer">
+                  <svg className="mockChartSvg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#d6ff72" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#d6ff72" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,35 Q15,10 30,22 T60,5 T90,15 L100,8 L100,40 L0,40 Z" fill="url(#chartGlow)" />
+                    <path d="M0,35 Q15,10 30,22 T60,5 T90,15 L100,8" fill="none" stroke="#d6ff72" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Mock Bottom Cards */}
+            <div className="mockCards">
+              <div className="miniCard">
+                <span className="miniCardLabel">Visitas</span>
+                <strong className="miniCardValue">12,482</strong>
+                <span className="miniCardTrend">+18%</span>
+              </div>
+              <div className="miniCard">
+                <span className="miniCardLabel">Leads</span>
+                <strong className="miniCardValue">1,402</strong>
+                <span className="miniCardTrend">+24%</span>
+              </div>
+              <div className="miniCard">
+                <span className="miniCardLabel">Ventas</span>
+                <strong className="miniCardValue">$8,420</strong>
+                <span className="miniCardTrend">+32%</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -482,21 +604,9 @@ export default function Home() {
           <p className="eyebrow">Servicios</p>
           <div className="servicesHeadMain">
             <h2>Servicios diseñados para negocios que quieren crecer con orden.</h2>
-            <div className="carouselControls">
-              <button className="carouselBtn prev" onClick={scrollPrev} aria-label="Anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
-              <button className="carouselBtn next" onClick={scrollNext} aria-label="Siguiente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
-        <div className="serviceGrid" ref={scrollerRef}>
+        <div className="serviceGrid" ref={scrollerRef} onScroll={handleServiceScroll}>
           {services.map((service) => (
             <article className="serviceCard" key={service.tag} onMouseMove={handleMouseMove}>
               <div className="serviceTop">
@@ -521,6 +631,23 @@ export default function Home() {
             </article>
           ))}
         </div>
+        {/* Dot indicators */}
+        <div className="carouselIndicators servicesIndicators">
+          {services.map((_, index) => (
+            <span
+              key={index}
+              className={`indicatorDot ${activeService === index ? 'active' : ''}`}
+              onClick={() => {
+                if (scrollerRef.current) {
+                  const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
+                  const gap = 20;
+                  scrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
+                }
+              }}
+              aria-label={`Ir al servicio ${index + 1}`}
+            />
+          ))}
+        </div>
         <div className="sectionCta">
           <button 
             className="button ghost diagnosisButton" 
@@ -532,31 +659,156 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="para-quien">
+      <section className="section reveal" id="para-quien">
         <div className="sectionHead">
           <p className="eyebrow">Para quién es</p>
-          <h2>Para negocios que necesitan verse más profesionales y funcionar mejor.</h2>
+          <h2>Para negocios que quieren verse tan bien como trabajan.</h2>
         </div>
-        <div className="pillRow">
-          {['Restaurantes', 'Cafeterías', 'Clínicas', 'Gimnasios', 'Academias', 'Negocios locales'].map((item) => (
-            <span key={item} className="pill">{item}</span>
+        <div className="targetGrid">
+          {([
+            {
+              label: 'Restaurantes',
+              result: 'Menú digital + pedidos por WhatsApp',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+                  <path d="M7 2v20" />
+                  <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
+                </svg>
+              ),
+            },
+            {
+              label: 'Cafeterías',
+              result: 'Más clientes desde Google Maps',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M17 8h1a4 4 0 0 1 0 8h-1" />
+                  <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                  <line x1="6" y1="2" x2="6" y2="4" />
+                  <line x1="10" y1="2" x2="10" y2="4" />
+                  <line x1="14" y1="2" x2="14" y2="4" />
+                </svg>
+              ),
+            },
+            {
+              label: 'Clínicas',
+              result: 'Citas online sin llamadas',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="3" y="2" width="18" height="20" rx="2" />
+                  <path d="M9 12h6" />
+                  <path d="M12 9v6" />
+                  <path d="M8 6h.01" />
+                  <path d="M16 6h.01" />
+                </svg>
+              ),
+            },
+            {
+              label: 'Gimnasios',
+              result: 'Clases y pagos organizados',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M6 4v16" />
+                  <path d="M18 4v16" />
+                  <path d="M6 12h12" />
+                  <path d="M3 6h3" />
+                  <path d="M18 6h3" />
+                  <path d="M3 18h3" />
+                  <path d="M18 18h3" />
+                </svg>
+              ),
+            },
+            {
+              label: 'Academias',
+              result: 'Matrículas sin papeleos',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+                  <path d="M9 10h6" />
+                  <path d="M9 14h4" />
+                </svg>
+              ),
+            },
+            {
+              label: 'Negocios locales',
+              result: 'Presencia profesional online',
+              icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+              ),
+            },
+          ] as { label: string; result: string; icon: React.ReactNode }[]).map(({ icon, label, result }) => (
+            <div key={label} className="targetCard">
+              <span className="targetIcon">{icon}</span>
+              <strong className="targetLabel">{label}</strong>
+              <p className="targetResult">{result}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="section" id="por-que">
+      <section className="section reveal" id="por-que">
         <div className="sectionHead whyHead">
           <p className="eyebrow">Por qué JV Studio</p>
-          <div>
-            <h2 className="whyTitle">
-              No hago páginas genéricas.
-            </h2>
-            <p className="whyText">
-              Cada proyecto tiene una intención clara: que tu negocio se vea profesional, funcione mejor y consiga más clientes. Diseño limpio, procesos útiles y tecnología que no complica.
-            </p>
+          <h2 className="whyTitle">No hago páginas genéricas.</h2>
+        </div>
+        <div className="differentiatorGrid" ref={whyScrollerRef} onScroll={handleWhyScroll}>
+          <div className="differentiatorCard">
+            <div className="diffIcon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                <path d="M2 17l10 5 10-5" />
+                <path d="M2 12l10 5 10-5" />
+              </svg>
+            </div>
+            <h3>Diseño desde cero</h3>
+            <p>Nada de templates. Cada proyecto se construye según tu negocio, tu cliente y tu objetivo. El resultado se nota.</p>
+          </div>
+          <div className="differentiatorCard">
+            <div className="diffIcon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <h3>Entrega en 1–3 semanas</h3>
+            <p>Sin sprints eternos ni procesos complicados. Trabajamos rápido y enfocados para que veas resultados concretos pronto.</p>
+          </div>
+          <div className="differentiatorCard">
+            <div className="diffIcon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M18 20a6 6 0 0 0-12 0" />
+                <circle cx="12" cy="10" r="4" />
+                <path d="M22 20a6 6 0 0 0-6-6 6 6 0 0 0-6 6" />
+              </svg>
+            </div>
+            <h3>Soporte post-entrega</h3>
+            <p>No desaparezco cuando termino. Te explico cómo usar lo que construí y estoy disponible para ajustes y dudas.</p>
           </div>
         </div>
+
+        {/* Indicadores visuales para móviles y tablets */}
+        <div className="carouselIndicators">
+          {[0, 1, 2].map((index) => (
+            <span 
+              key={index} 
+              className={`indicatorDot ${activeWhy === index ? 'active' : ''}`}
+              onClick={() => {
+                if (whyScrollerRef.current) {
+                  const cardWidth = whyScrollerRef.current.querySelector('.differentiatorCard')?.getBoundingClientRect().width || 280;
+                  const gap = 16;
+                  whyScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
+                }
+              }}
+              aria-label={`Ir al diferenciador ${index + 1}`}
+            />
+          ))}
+        </div>
       </section>
+
 
       <section className="section processSection reveal" id="proceso">
         <div className="sectionHead">
@@ -620,33 +872,21 @@ export default function Home() {
                 Soluciones digitales a la medida, pensadas para que cada negocio comunique mejor, atienda mejor y venda con más claridad.
               </p>
             </div>
-            <div className="carouselControls">
-              <button className="carouselBtn prev" onClick={scrollProjectsPrev} aria-label="Anterior">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="15 18 9 12 15 6"></polyline>
-                </svg>
-              </button>
-              <button className="carouselBtn next" onClick={scrollProjectsNext} aria-label="Siguiente">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </button>
-            </div>
           </div>
         </div>
-        <div className="projectCarousel" ref={projectsScrollerRef}>
+        <div className="projectCarousel" ref={projectsScrollerRef} onScroll={handleProjectsScroll}>
           {projects.map((project) => (
             <article className="projectCard" key={project.title}>
               <div 
                 className={`projectThumb ${project.accent} ${project.type}`} 
                 aria-label={`Visualización de ${project.title}`}
               >
-                <div className={`projectLogoWrapper ${project.type === 'portfolio' ? 'portfolioWrapper' : ''}`}>
+                <div className={`projectLogoWrapper ${project.type === 'portfolio' ? 'portfolioFrame' : ''}`}>
                   {project.logoAlt ? (
                     <div className="logo-container">
                       <Image 
                         src={project.logo} 
-                        alt={`${project.title} Logo 1`} 
+                        alt="" 
                         className="rotating-logo logo-1"
                         width={360}
                         height={120}
@@ -654,7 +894,7 @@ export default function Home() {
                       />
                       <Image 
                         src={project.logoAlt} 
-                        alt={`${project.title} Logo 2`} 
+                        alt="" 
                         className="rotating-logo logo-2"
                         width={360}
                         height={120}
@@ -664,8 +904,8 @@ export default function Home() {
                   ) : project.logo ? (
                     <Image 
                       src={project.logo} 
-                      alt={`${project.title} Logo`} 
-                      className={project.type === 'portfolio' ? 'fullPreviewImage' : 'plateLogo'}
+                      alt="" 
+                      className={project.type === 'portfolio' ? 'portfolioPreviewImage' : 'plateLogo'}
                       width={project.type === 'portfolio' ? 600 : 360}
                       height={project.type === 'portfolio' ? 340 : 120}
                       priority={true}
@@ -677,7 +917,7 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <span>Proyecto / {project.category}</span>
+              <span>{project.category}</span>
               <h3>{project.title}</h3>
               <p>{project.description}</p>
               <div className="projectResult">
@@ -700,6 +940,24 @@ export default function Home() {
                 </a>
               </div>
             </article>
+          ))}
+        </div>
+
+        {/* Indicadores visuales para móviles, tablets y desktop */}
+        <div className="carouselIndicators projectsIndicators">
+          {projects.map((_, index) => (
+            <span 
+              key={index} 
+              className={`indicatorDot ${activeProject === index ? 'active' : ''}`}
+              onClick={() => {
+                if (projectsScrollerRef.current) {
+                  const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
+                  const gap = 30;
+                  projectsScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
+                }
+              }}
+              aria-label={`Ir al proyecto ${index + 1}`}
+            />
           ))}
         </div>
         <div className="centerAction">
