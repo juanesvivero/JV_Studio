@@ -3,434 +3,198 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 
-const services = [
-  {
-    tag: '01',
-    title: 'Páginas Web',
-    text: 'Landing pages, páginas corporativas, menús digitales y portfolios.',
-    features: [
-      'Diseño responsive',
-      'Integración con WhatsApp',
-      'Formularios',
-      'SEO básico',
-      'Estructura clara de contenido',
-    ],
-    cta: 'Estructurar mi web',
-    projectSelectType: 'Páginas Web',
-    icon: 'browser',
-  },
-  {
-    tag: '02',
-    title: 'Presencia Digital',
-    text: 'Google Maps, WhatsApp Business, Instagram y estructura digital.',
-    features: [
-      'Google Maps',
-      'Instagram',
-      'WhatsApp Business',
-      'Links',
-      'Formularios',
-      'Revisión de contenido',
-    ],
-    cta: 'Iniciar diagnóstico',
-    projectSelectType: 'Presencia Digital',
-    icon: 'search',
-  },
-  {
-    tag: '03',
-    title: 'Automatización',
-    text: 'Formularios, bases de datos y flujos automáticos.',
-    features: [
-      'Formularios automáticos',
-      'Bases de datos',
-      'Seguimiento de clientes',
-      'Registro de leads',
-      'Flujos de atención',
-    ],
-    cta: 'Automatizar mi negocio',
-    projectSelectType: 'Automatización',
-    icon: 'flow',
-  },
-  {
-    tag: '04',
-    title: 'Dashboards',
-    text: 'Reportes visuales y métricas para tomar mejores decisiones.',
-    features: [
-      'Métricas de ventas',
-      'Reportes visuales',
-      'Seguimiento de clientes',
-      'Indicadores clave',
-      'Control de resultados',
-    ],
-    cta: 'Ver cómo funciona',
-    projectSelectType: 'Dashboards',
-    icon: 'chart',
-  },
-];
+import { services } from './data/services';
+import { projects } from './data/projects';
+import { processSteps } from './data/process';
+import { faqs } from './data/faqs';
+import ServiceIcon from './components/ServiceIcon';
+import FaqItem from './components/FaqItem';
+import ContactModal from './components/ContactModal';
 
-const process = [
-  ['Diagnóstico', 'Veo dónde estás parado.'],
-  ['Estrategia', 'Definimos qué tiene más sentido.'],
-  ['Diseño', 'Construyo la estructura visual.'],
-  ['Implementación', 'Lo conecto todo.'],
-  ['Entrega', 'Te explico cómo usarlo.'],
-  ['Soporte', 'No desaparezco después de entregar.'],
-];
-
-const projects = [
+// Target audience items for the "Para quién es" section
+const TARGET_ITEMS = [
   {
-    title: 'Click Line Security',
-    category: 'Seguridad',
-    description: 'Sitio corporativo para una empresa de seguridad electrónica y monitoreo, diseñado para presentar servicios críticos con una imagen sólida y confiable.',
-    result: 'Arquitectura clara para CCTV, alarmas, GPS y seguridad residencial/comercial.',
-    highlights: ['Confianza visual', 'Servicios claros', 'CTA directo'],
-    href: 'https://clickline.mobi/security/index.html',
-    accent: 'rose',
-    type: 'security',
-    logo: '/security_logo_transparent-mobile.webp',
-  },
-  {
-    title: 'Click Line Solutions / RunFood App',
-    category: 'Soluciones / POS',
-    description: 'Plataforma para mostrar soluciones digitales y RunFood App, un POS orientado a restaurantes y negocios de comida.',
-    result: 'Presentación enfocada en ventas, inventario, pedidos, facturación y reportes.',
-    highlights: ['Producto SaaS', 'Automatización', 'Reportes'],
-    href: 'https://clickline.mobi/solutions/index.html',
-    accent: 'gold',
-    type: 'solutions',
-    logo: '/solutions_logo_transparent.webp',
-    logoAlt: '/RunFoodLogo.png',
-  },
-  {
-    title: 'Portafolio Web — Amelia Padilla',
-    category: 'Portafolio / Web',
-    description: 'Landing page minimalista y optimizada para una creadora de contenido, enfocada en presentar su trabajo, métricas y colaboraciones de forma clara y profesional.',
-    result: 'Portafolio optimizado para rendimiento y conversión mobile-first.',
-    highlights: ['Diseño Minimalista', 'Analíticas Integradas', 'Mobile First'],
-    href: 'https://portafolio-ame-padilla.vercel.app/',
-    accent: 'blue',
-    type: 'portfolio',
-    logo: '/Portafolio_Amelia_Padilla.png',
-  },
-  {
-    title: 'NatuPet',
-    category: 'Marca / Web',
-    description: 'Sitio web para una marca enfocada en bienestar animal, con una presencia visual limpia, natural y cercana.',
-    result: 'Identidad digital clara para presentar la marca y conectar con clientes desde el primer vistazo.',
-    highlights: ['Marca natural', 'Diseño limpio', 'Presencia web'],
-    href: 'https://natu-pet.vercel.app/#/',
-    accent: 'green',
-    type: 'natupet',
-    logo: '/NatuPet.png',
-  },
-  {
-    title: 'La Mila',
-    category: 'Restaurante / Web',
-    description: 'Presencia digital para un negocio gastronómico, diseñada para reforzar marca, confianza y recordación visual.',
-    result: 'Sitio directo y visual para comunicar la identidad del restaurante y facilitar el contacto.',
-    highlights: ['Identidad gastronómica', 'Marca memorable', 'Acceso rápido'],
-    href: 'https://lamila.vercel.app/',
-    accent: 'amber',
-    type: 'lamila',
-    logo: '/LaMila.png',
-  },
-];
-
-const faqs = [
-  ['¿Trabajas con negocios de Ambato?', 'Sí. Trabajo principalmente con negocios locales de Ambato, pero también puedo trabajar remoto con negocios de cualquier ciudad de Ecuador.'],
-  ['¿Cuánto cuesta un proyecto?', 'Depende del tipo de proyecto, cantidad de secciones y funcionalidades. Por eso primero hago un diagnóstico.'],
-  ['¿Cuánto tiempo tarda?', 'Una página simple puede tardar entre 1 y 2 semanas. Proyectos más completos pueden tardar entre 3 y 4 semanas.'],
-  ['¿Puedo pedir solo un servicio?', 'Sí. Puedes contratar solo una página web, un diagnóstico, una automatización o un dashboard.'],
-  ['¿Necesito tener textos e imágenes?', 'No necesariamente. Puedo ayudarte a organizar el contenido inicial.'],
-  ['¿La web funciona en celulares?', 'Sí. Todas las páginas se diseñan para verse bien en computadora, tablet y celular.'],
-];
-
-function ServiceIcon({ type }: { type: string }) {
-  if (type === 'search') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" style={{ fill: 'none', stroke: 'currentColor' }}>
-        <circle cx="11" cy="11" r="6" />
-        <path d="m16 16 5 5" />
-        <path d="M8 11h6" />
+    label: 'Restaurantes',
+    result: 'Menú digital + pedidos por WhatsApp',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+        <path d="M7 2v20" />
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
       </svg>
-    );
-  }
-
-  if (type === 'flow') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" style={{ fill: 'none', stroke: 'currentColor' }}>
-        <rect x="3" y="4" width="6" height="6" rx="1" />
-        <rect x="15" y="14" width="6" height="6" rx="1" />
-        <path d="M9 7h3a4 4 0 0 1 4 4v3" />
-        <path d="M13 12l3 3 3-3" />
+    ),
+  },
+  {
+    label: 'Cafeterías',
+    result: 'Más clientes desde Google Maps',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M17 8h1a4 4 0 0 1 0 8h-1" />
+        <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+        <line x1="6" y1="2" x2="6" y2="4" />
+        <line x1="10" y1="2" x2="10" y2="4" />
+        <line x1="14" y1="2" x2="14" y2="4" />
       </svg>
-    );
-  }
-
-  if (type === 'chart') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" style={{ fill: 'none', stroke: 'currentColor' }}>
-        <path d="M4 20V5" />
-        <path d="M4 20h16" />
-        <rect x="7" y="11" width="3" height="6" rx="1" />
-        <rect x="12" y="8" width="3" height="9" rx="1" />
-        <rect x="17" y="5" width="3" height="12" rx="1" />
+    ),
+  },
+  {
+    label: 'Clínicas',
+    result: 'Citas online sin llamadas',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="3" y="2" width="18" height="20" rx="2" />
+        <path d="M9 12h6" />
+        <path d="M12 9v6" />
+        <path d="M8 6h.01" />
+        <path d="M16 6h.01" />
       </svg>
-    );
-  }
+    ),
+  },
+  {
+    label: 'Gimnasios',
+    result: 'Clases y pagos organizados',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M6 4v16" />
+        <path d="M18 4v16" />
+        <path d="M6 12h12" />
+        <path d="M3 6h3" />
+        <path d="M18 6h3" />
+        <path d="M3 18h3" />
+        <path d="M18 18h3" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Academias',
+    result: 'Matrículas sin papeleos',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
+        <path d="M9 10h6" />
+        <path d="M9 14h4" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Negocios locales',
+    result: 'Presencia profesional online',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    ),
+  },
+] as const;
 
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" style={{ fill: 'none', stroke: 'currentColor' }}>
-      <rect x="3" y="5" width="18" height="13" rx="2" />
-      <path d="M3 9h18" />
-      <path d="M8 21h8" />
-      <path d="M12 18v3" />
-    </svg>
-  );
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function resolveProjectType(raw: string): string {
+  if (!raw) return '';
+  const v = raw.toLowerCase();
+  if (v.includes('web') || v.includes('página')) return 'Página web';
+  if (v.includes('presencia')) return 'Presencia digital';
+  if (v.includes('automat')) return 'Automatización';
+  if (v.includes('dashboard') || v.includes('reporte')) return 'Dashboard';
+  return 'No sé aún';
 }
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div 
-      className={`faqItem ${isOpen ? 'open' : ''}`}
-      onClick={() => setIsOpen(!isOpen)}
-    >
-      <button className="faqQuestionButton" aria-expanded={isOpen}>
-        <span>{question}</span>
-        <svg 
-          className="faqChevron" 
-          width="16" 
-          height="16" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          strokeWidth="2.5" 
-          strokeLinecap="round" 
-          strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
-      <div className={`faqAnswerWrapper ${isOpen ? 'open' : ''}`}>
-        <div className="faqAnswerContent">
-          <p>{answer}</p>
-        </div>
-      </div>
-    </div>
-  );
+function useScrollIndex(
+  ref: React.RefObject<HTMLElement | null>,
+  selector: string,
+  gap: number,
+  max: number
+) {
+  const [index, setIndex] = useState(0);
+  const handleScroll = () => {
+    const el = ref.current;
+    if (!el) return;
+    const cardWidth = el.querySelector(selector)?.getBoundingClientRect().width ?? gap * 10;
+    setIndex(Math.min(max, Math.max(0, Math.round(el.scrollLeft / (cardWidth + gap)))));
+  };
+  return { index, handleScroll };
 }
+
+function scrollTo(ref: React.RefObject<HTMLElement | null>, selector: string, gap: number, targetIndex: number) {
+  const el = ref.current;
+  if (!el) return;
+  const cardWidth = el.querySelector(selector)?.getBoundingClientRect().width ?? 280;
+  el.scrollTo({ left: targetIndex * (cardWidth + gap), behavior: 'smooth' });
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('inicio');
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalProjectType, setModalProjectType] = useState('');
 
-  // Carousel scroller reference and active state for "Servicios"
+  // Carousel refs
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [activeService, setActiveService] = useState(0);
-
-  const handleServiceScroll = () => {
-    if (scrollerRef.current) {
-      const scroller = scrollerRef.current;
-      const scrollLeft = scroller.scrollLeft;
-      const cardWidth = scroller.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
-      const gap = 20;
-      const idx = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveService(Math.min(services.length - 1, Math.max(0, idx)));
-    }
-  };
-
-  // Carousel scroller reference for "Proyectos"
+  const stepsScrollerRef = useRef<HTMLDivElement>(null);
+  const whyScrollerRef = useRef<HTMLDivElement>(null);
   const projectsScrollerRef = useRef<HTMLDivElement>(null);
 
-  // Carousel scroller reference and active step state for "Proceso" mobile carousel
-  const [activeStep, setActiveStep] = useState(0);
-  const stepsScrollerRef = useRef<HTMLDivElement>(null);
+  // Carousel active indices
+  const { index: activeService, handleScroll: handleServiceScroll } = useScrollIndex(scrollerRef, '.serviceCard', 20, services.length - 1);
+  const { index: activeStep, handleScroll: handleStepsScroll } = useScrollIndex(stepsScrollerRef, '.step', 20, processSteps.length - 1);
+  const { index: activeWhy, handleScroll: handleWhyScroll } = useScrollIndex(whyScrollerRef, '.differentiatorCard', 16, 2);
+  const { index: activeProject, handleScroll: handleProjectsScroll } = useScrollIndex(projectsScrollerRef, '.projectCard', 30, projects.length - 1);
 
-  const handleStepsScroll = () => {
-    if (stepsScrollerRef.current) {
-      const scroller = stepsScrollerRef.current;
-      const scrollLeft = scroller.scrollLeft;
-      const cardWidth = scroller.querySelector('.step')?.getBoundingClientRect().width || 280;
-      const gap = 20;
-      const stepIndex = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveStep(Math.min(5, Math.max(0, stepIndex)));
-    }
+  // Interactive mouse glow on cards
+  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+    card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
   };
 
-  // Carousel scroller reference and active state for "Por qué JV Studio" (Diferenciadores) mobile carousel
-  const [activeWhy, setActiveWhy] = useState(0);
-  const whyScrollerRef = useRef<HTMLDivElement>(null);
-
-  const handleWhyScroll = () => {
-    if (whyScrollerRef.current) {
-      const scroller = whyScrollerRef.current;
-      const scrollLeft = scroller.scrollLeft;
-      const cardWidth = scroller.querySelector('.differentiatorCard')?.getBoundingClientRect().width || 280;
-      const gap = 16;
-      const whyIndex = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveWhy(Math.min(2, Math.max(0, whyIndex)));
-    }
+  // Open contact modal, optionally pre-selecting a project type
+  const openTally = (projType = '') => {
+    setModalProjectType(resolveProjectType(projType));
+    setModalOpen(true);
   };
 
-  // Carousel scroller active state and listener for "Proyectos"
-  const [activeProject, setActiveProject] = useState(0);
-
-  const handleProjectsScroll = () => {
-    if (projectsScrollerRef.current) {
-      const scroller = projectsScrollerRef.current;
-      const scrollLeft = scroller.scrollLeft;
-      const cardWidth = scroller.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
-      const gap = 30;
-      const projectIndex = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveProject(Math.min(projects.length - 1, Math.max(0, projectIndex)));
-    }
-  };
-
-  // Form state hooks
-  const [name, setName] = useState('');
-  const [contactMethod, setContactMethod] = useState('');
-  const [projectType, setProjectType] = useState('');
-  const [budget, setBudget] = useState('');
-  const [message, setMessage] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState('');
-
-  // IntersectionObserver para Scrollspy en el Menu de Navegación
+  // Scrollspy: highlight active nav link
   useEffect(() => {
     const sections = document.querySelectorAll('section, header');
-    const observerOptions = {
-      root: null,
-      rootMargin: '-30% 0px -55% 0px', // Activa en la zona media-superior
-      threshold: 0,
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const id = entry.target.getAttribute('id');
-          if (id) {
-            setActiveSection(id);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            if (id) setActiveSection(id);
           }
-        }
-      });
-    }, observerOptions);
-
-    sections.forEach((section) => {
-      observer.observe(section);
-    });
-
+        });
+      },
+      { root: null, rootMargin: '-30% 0px -55% 0px', threshold: 0 }
+    );
+    sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
   }, []);
 
-  // IntersectionObserver para animaciones de reveal al hacer scroll
+  // Scroll-driven reveal animations
   useEffect(() => {
-    const reveals = document.querySelectorAll('.reveal');
-    const revealObserver = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('visible');
-            revealObserver.unobserve(entry.target);
+            observer.unobserve(entry.target);
           }
         });
       },
       { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     );
-    reveals.forEach((el) => revealObserver.observe(el));
-    return () => revealObserver.disconnect();
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
   }, []);
-
-
-
-  // Escuchador de Mouse para el Halo de Luz Interactivo (Cursor Glow)
-  const handleMouseMove = (e: React.MouseEvent<HTMLElement>) => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    card.style.setProperty('--mouse-x', `${x}px`);
-    card.style.setProperty('--mouse-y', `${y}px`);
-  };
-
-  const openTally = (projType = '') => {
-    let optionToSelect = '';
-    if (projType) {
-      const lowerVal = projType.toLowerCase();
-      if (lowerVal.includes('web') || lowerVal.includes('página')) optionToSelect = 'Página web';
-      else if (lowerVal.includes('presencia')) optionToSelect = 'Presencia digital';
-      else if (lowerVal.includes('automat')) optionToSelect = 'Automatización';
-      else if (lowerVal.includes('dashboard') || lowerVal.includes('reporte')) optionToSelect = 'Dashboard';
-      else optionToSelect = 'No sé aún';
-    }
-
-    setName('');
-    setContactMethod('');
-    setProjectType(optionToSelect || '');
-    setBudget('');
-    setMessage('');
-    setError('');
-    setSuccess(false);
-    setSubmitting(false);
-
-    setModalOpen(true);
-  };
-
-  const closeTally = () => {
-    setModalOpen(false);
-    setSuccess(false);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSubmitting(true);
-
-    const isEmail = contactMethod.includes('@');
-    const payload = {
-      name,
-      email: isEmail ? contactMethod : '',
-      phone: !isEmail ? contactMethod : '',
-      projectType: projectType || 'No sé aún',
-      message: message + (budget ? ` [Presupuesto: ${budget}]` : ''),
-      budget
-    };
-
-    try {
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-      if (response.ok && result.ok) {
-        setSuccess(true);
-      } else {
-        throw new Error(result.error || 'Ocurrió un error al enviar el formulario.');
-      }
-    } catch (err) {
-      console.error('API submission failed, using WhatsApp backup redirection:', err);
-      
-      // Transición premium: cerramos el modal actual y activamos la modal de redirección
-      setModalOpen(false);
-      setIsRedirecting(true);
-      
-      const waMsg = `Hola Juan, acabo de solicitar mi diagnóstico gratuito:\n\n*Nombre:* ${name}\n*Contacto:* ${contactMethod}\n*Proyecto:* ${projectType || 'No sé aún'}\n*Presupuesto:* ${budget || 'A consultar'}\n*Mensaje:* ${message}`;
-      
-      setTimeout(() => {
-        setIsRedirecting(false);
-        window.open(`https://wa.me/593984937364?text=${encodeURIComponent(waMsg)}`, '_blank');
-      }, 1800);
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   return (
     <main>
+      {/* ── Navigation ──────────────────────────────────────────────────────── */}
       <header className="nav">
         <a className="brand" href="#inicio" aria-label="Ir al inicio">
           <span className="brandMark">
@@ -443,13 +207,10 @@ export default function Home() {
           <a href="#proyectos" className={activeSection === 'proyectos' ? 'active' : ''}>Proyectos</a>
           <a href="#proceso" className={activeSection === 'proceso' ? 'active' : ''}>Proceso</a>
           <a href="#faq" className={activeSection === 'faq' ? 'active' : ''}>FAQ</a>
-          <a 
-            className="navCta" 
+          <a
+            className="navCta"
             href="#contacto"
-            onClick={(e) => {
-              e.preventDefault();
-              openTally();
-            }}
+            onClick={(e) => { e.preventDefault(); openTally(); }}
           >
             Solicitar diagnóstico
           </a>
@@ -459,32 +220,20 @@ export default function Home() {
       <nav className="mobileQuickNav" aria-label="Navegación móvil">
         <a href="#servicios">Servicios</a>
         <a href="#proyectos">Proyectos</a>
-        <a 
-          href="#contacto"
-          onClick={(e) => {
-            e.preventDefault();
-            openTally();
-          }}
-        >
-          Contacto
-        </a>
+        <a href="#contacto" onClick={(e) => { e.preventDefault(); openTally(); }}>Contacto</a>
       </nav>
 
+      {/* ── Hero ────────────────────────────────────────────────────────────── */}
       <section className="hero heroSplit" id="inicio">
         <div className="heroCopy">
           <p className="eyebrow">JV Studio / Ambato, Ecuador</p>
           <h1>Tu negocio ya es bueno.</h1>
-          <p className="lead">
-            Hagamos que su presencia digital también lo sea.
-          </p>
+          <p className="lead">Hagamos que su presencia digital también lo sea.</p>
           <div className="heroActions">
-            <a 
-              className="button primary" 
+            <a
+              className="button primary"
               href="#contacto"
-              onClick={(e) => {
-                e.preventDefault();
-                openTally();
-              }}
+              onClick={(e) => { e.preventDefault(); openTally(); }}
             >
               Solicitar diagnóstico
             </a>
@@ -492,18 +241,15 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hero browser mockup — dashboard original */}
+        {/* Browser mockup */}
         <div className="heroMockupWrap" aria-hidden="true">
           <div className="heroGlow" />
           <div className="browserMockup">
-            {/* Browser chrome */}
             <div className="browserTop">
               <span className="dot-red" />
               <span className="dot-yellow" />
               <span className="dot-green" />
             </div>
-
-            {/* Mock Nav */}
             <div className="mockNav">
               <span className="mockBrand">
                 <Image src="/jv-studio-logo.png" alt="" width={120} height={35} />
@@ -514,8 +260,6 @@ export default function Home() {
                 <span className="active">Panel</span>
               </div>
             </div>
-
-            {/* Mock Hero Section */}
             <div className="mockHero">
               <div className="mockHeroCopy">
                 <h3 className="mockTitle">Diseño web y automatización.</h3>
@@ -541,8 +285,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Mock Bottom Cards */}
             <div className="mockCards">
               <div className="miniCard">
                 <span className="miniCardLabel">Visitas</span>
@@ -562,18 +304,18 @@ export default function Home() {
             </div>
           </div>
         </div>
-
       </section>
 
+      {/* ── Marquee ─────────────────────────────────────────────────────────── */}
       <div className="marquee" aria-hidden="true">
         <div>
           <span>Web Design / Responsive Websites / Automation / Dashboards — Web Design / Responsive Websites / Automation / Dashboards — Web Design / Responsive Websites / Automation / Dashboards — Web Design / Responsive Websites / Automation / Dashboards — </span>
         </div>
       </div>
 
+      {/* ── Problem / Solution ──────────────────────────────────────────────── */}
       <section className="section" id="diagnostico" aria-label="Problema vs Solución">
         <div className="contrastGrid">
-          {/* Columna Izquierda: El Problema */}
           <div className="contrastCol problemCol">
             <span className="eyebrow statusEyebrow problem">x El Problema</span>
             <h2>Muchos negocios pierden clientes antes de que lleguen a escribirles.</h2>
@@ -585,7 +327,6 @@ export default function Home() {
               <li><span>x</span> Su negocio se ve menos profesional de lo que es</li>
             </ul>
           </div>
-          {/* Columna Derecha: La Solución */}
           <div className="contrastCol solutionCol">
             <span className="eyebrow statusEyebrow solution">+ La Solución</span>
             <h2>Diseño digital claro para negocios reales.</h2>
@@ -599,6 +340,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Services ────────────────────────────────────────────────────────── */}
       <section className="section servicesSection" id="servicios">
         <div className="sectionHead servicesHead">
           <p className="eyebrow">Servicios</p>
@@ -622,8 +364,8 @@ export default function Home() {
                   <li key={feature}>{feature}</li>
                 ))}
               </ul>
-              <button 
-                className="button ghost serviceButton" 
+              <button
+                className="button ghost serviceButton"
                 onClick={() => openTally(service.projectSelectType)}
               >
                 {service.cta}
@@ -631,116 +373,32 @@ export default function Home() {
             </article>
           ))}
         </div>
-        {/* Dot indicators */}
         <div className="carouselIndicators servicesIndicators">
-          {services.map((_, index) => (
+          {services.map((_, i) => (
             <span
-              key={index}
-              className={`indicatorDot ${activeService === index ? 'active' : ''}`}
-              onClick={() => {
-                if (scrollerRef.current) {
-                  const cardWidth = scrollerRef.current.querySelector('.serviceCard')?.getBoundingClientRect().width || 340;
-                  const gap = 20;
-                  scrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
-                }
-              }}
-              aria-label={`Ir al servicio ${index + 1}`}
+              key={i}
+              className={`indicatorDot ${activeService === i ? 'active' : ''}`}
+              onClick={() => scrollTo(scrollerRef, '.serviceCard', 20, i)}
+              aria-label={`Ir al servicio ${i + 1}`}
             />
           ))}
         </div>
         <div className="sectionCta">
-          <button 
-            className="button ghost diagnosisButton" 
-            onClick={() => openTally('Presencia Digital')}
-          >
+          <button className="button ghost diagnosisButton" onClick={() => openTally('Presencia Digital')}>
             <span>¿No sabes cuál necesitas? Empieza con un diagnóstico gratis</span>
             <span className="arrow">→</span>
           </button>
         </div>
       </section>
 
+      {/* ── Para quién es ───────────────────────────────────────────────────── */}
       <section className="section reveal" id="para-quien">
         <div className="sectionHead">
           <p className="eyebrow">Para quién es</p>
           <h2>Para negocios que quieren verse tan bien como trabajan.</h2>
         </div>
         <div className="targetGrid">
-          {([
-            {
-              label: 'Restaurantes',
-              result: 'Menú digital + pedidos por WhatsApp',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
-                  <path d="M7 2v20" />
-                  <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7" />
-                </svg>
-              ),
-            },
-            {
-              label: 'Cafeterías',
-              result: 'Más clientes desde Google Maps',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M17 8h1a4 4 0 0 1 0 8h-1" />
-                  <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-                  <line x1="6" y1="2" x2="6" y2="4" />
-                  <line x1="10" y1="2" x2="10" y2="4" />
-                  <line x1="14" y1="2" x2="14" y2="4" />
-                </svg>
-              ),
-            },
-            {
-              label: 'Clínicas',
-              result: 'Citas online sin llamadas',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="2" width="18" height="20" rx="2" />
-                  <path d="M9 12h6" />
-                  <path d="M12 9v6" />
-                  <path d="M8 6h.01" />
-                  <path d="M16 6h.01" />
-                </svg>
-              ),
-            },
-            {
-              label: 'Gimnasios',
-              result: 'Clases y pagos organizados',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M6 4v16" />
-                  <path d="M18 4v16" />
-                  <path d="M6 12h12" />
-                  <path d="M3 6h3" />
-                  <path d="M18 6h3" />
-                  <path d="M3 18h3" />
-                  <path d="M18 18h3" />
-                </svg>
-              ),
-            },
-            {
-              label: 'Academias',
-              result: 'Matrículas sin papeleos',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                  <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z" />
-                  <path d="M9 10h6" />
-                  <path d="M9 14h4" />
-                </svg>
-              ),
-            },
-            {
-              label: 'Negocios locales',
-              result: 'Presencia profesional online',
-              icon: (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-              ),
-            },
-          ] as { label: string; result: string; icon: React.ReactNode }[]).map(({ icon, label, result }) => (
+          {TARGET_ITEMS.map(({ icon, label, result }) => (
             <div key={label} className="targetCard">
               <span className="targetIcon">{icon}</span>
               <strong className="targetLabel">{label}</strong>
@@ -750,6 +408,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Por qué JV Studio ───────────────────────────────────────────────── */}
       <section className="section reveal" id="por-que">
         <div className="sectionHead whyHead">
           <p className="eyebrow">Por qué JV Studio</p>
@@ -789,61 +448,46 @@ export default function Home() {
             <p>No desaparezco cuando termino. Te explico cómo usar lo que construí y estoy disponible para ajustes y dudas.</p>
           </div>
         </div>
-
-        {/* Indicadores visuales para móviles y tablets */}
         <div className="carouselIndicators">
-          {[0, 1, 2].map((index) => (
-            <span 
-              key={index} 
-              className={`indicatorDot ${activeWhy === index ? 'active' : ''}`}
-              onClick={() => {
-                if (whyScrollerRef.current) {
-                  const cardWidth = whyScrollerRef.current.querySelector('.differentiatorCard')?.getBoundingClientRect().width || 280;
-                  const gap = 16;
-                  whyScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
-                }
-              }}
-              aria-label={`Ir al diferenciador ${index + 1}`}
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className={`indicatorDot ${activeWhy === i ? 'active' : ''}`}
+              onClick={() => scrollTo(whyScrollerRef, '.differentiatorCard', 16, i)}
+              aria-label={`Ir al diferenciador ${i + 1}`}
             />
           ))}
         </div>
       </section>
 
-
+      {/* ── Process ─────────────────────────────────────────────────────────── */}
       <section className="section processSection reveal" id="proceso">
         <div className="sectionHead">
           <p className="eyebrow">Proceso</p>
           <h2>Cómo trabajo</h2>
         </div>
         <div className="steps" ref={stepsScrollerRef} onScroll={handleStepsScroll}>
-          {process.map(([title, text], index) => (
+          {processSteps.map(([title, text], i) => (
             <article className="step" key={title}>
-              <span>{String(index + 1).padStart(2, '0')}</span>
+              <span>{String(i + 1).padStart(2, '0')}</span>
               <h3>{title}</h3>
               <p>{text}</p>
             </article>
           ))}
         </div>
-        
-        {/* Indicadores visuales para móviles y tablets */}
         <div className="carouselIndicators">
-          {process.map((_, index) => (
-            <span 
-              key={index} 
-              className={`indicatorDot ${activeStep === index ? 'active' : ''}`}
-              onClick={() => {
-                if (stepsScrollerRef.current) {
-                  const cardWidth = stepsScrollerRef.current.querySelector('.step')?.getBoundingClientRect().width || 280;
-                  const gap = 20;
-                  stepsScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
-                }
-              }}
-              aria-label={`Ir al paso ${index + 1}`}
+          {processSteps.map((_, i) => (
+            <span
+              key={i}
+              className={`indicatorDot ${activeStep === i ? 'active' : ''}`}
+              onClick={() => scrollTo(stepsScrollerRef, '.step', 20, i)}
+              aria-label={`Ir al paso ${i + 1}`}
             />
           ))}
         </div>
       </section>
 
+      {/* ── About ───────────────────────────────────────────────────────────── */}
       <section className="section personSection">
         <div className="personCard">
           <div className="avatar" aria-hidden="true">
@@ -862,6 +506,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Projects ────────────────────────────────────────────────────────── */}
       <section className="section projectsSection" id="proyectos">
         <div className="sectionHead projectsHead">
           <p className="eyebrow">Proyectos</p>
@@ -877,38 +522,21 @@ export default function Home() {
         <div className="projectCarousel" ref={projectsScrollerRef} onScroll={handleProjectsScroll}>
           {projects.map((project) => (
             <article className="projectCard" key={project.title}>
-              <div 
-                className={`projectThumb ${project.accent} ${project.type}`} 
-                aria-label={`Visualización de ${project.title}`}
-              >
-                <div className={`projectLogoWrapper ${project.type === 'portfolio' ? 'portfolioFrame' : ''}`}>
+              <div className={`projectThumb ${project.accent} ${project.type}`} aria-label={`Visualización de ${project.title}`}>
+                <div className={`projectLogoWrapper ${['portfolio', 'natupet'].includes(project.type) ? 'portfolioFrame' : ''}`}>
                   {project.logoAlt ? (
                     <div className="logo-container">
-                      <Image 
-                        src={project.logo} 
-                        alt="" 
-                        className="rotating-logo logo-1"
-                        width={360}
-                        height={120}
-                        priority={true}
-                      />
-                      <Image 
-                        src={project.logoAlt} 
-                        alt="" 
-                        className="rotating-logo logo-2"
-                        width={360}
-                        height={120}
-                        priority={true}
-                      />
+                      <Image src={project.logo} alt="" className="rotating-logo logo-1" width={360} height={120} priority />
+                      <Image src={project.logoAlt} alt="" className="rotating-logo logo-2" width={360} height={120} priority />
                     </div>
                   ) : project.logo ? (
-                    <Image 
-                      src={project.logo} 
-                      alt="" 
-                      className={project.type === 'portfolio' ? 'portfolioPreviewImage' : 'plateLogo'}
-                      width={project.type === 'portfolio' ? 600 : 360}
-                      height={project.type === 'portfolio' ? 340 : 120}
-                      priority={true}
+                    <Image
+                      src={project.logo}
+                      alt=""
+                      className={['portfolio', 'natupet'].includes(project.type) ? `portfolioPreviewImage ${project.type}Image` : 'plateLogo'}
+                      width={['portfolio', 'natupet'].includes(project.type) ? 600 : 360}
+                      height={['portfolio', 'natupet'].includes(project.type) ? 340 : 120}
+                      priority
                     />
                   ) : (
                     <div className="textLogo" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.1 }}>
@@ -917,59 +545,46 @@ export default function Home() {
                   )}
                 </div>
               </div>
-              <span>{project.category}</span>
-              <h3>{project.title}</h3>
-              <p>{project.description}</p>
-              <div className="projectResult">
-                <strong>Impacto</strong>
-                <span>{project.result}</span>
-              </div>
-              <div className="projectTags">
-                {project.highlights.map((item) => (
-                  <span key={item}>{item}</span>
-                ))}
-              </div>
-              <div className="projectAction">
-                <a 
-                  className={`projectButton ${project.accent}`} 
-                  href={project.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Visitar sitio web <span className="arrow">→</span>
-                </a>
+              <div className="projectContent">
+                <span>{project.category}</span>
+                <h3>{project.title}</h3>
+                <p>{project.description}</p>
+                <div className="projectResult">
+                  <strong>Impacto</strong>
+                  <span>{project.result}</span>
+                </div>
+                <div className="projectTags">
+                  {project.highlights.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+                <div className="projectAction">
+                  <a className={`projectButton ${project.accent}`} href={project.href} target="_blank" rel="noopener noreferrer">
+                    Visitar sitio web <span className="arrow">→</span>
+                  </a>
+                </div>
               </div>
             </article>
           ))}
         </div>
-
-        {/* Indicadores visuales para móviles, tablets y desktop */}
         <div className="carouselIndicators projectsIndicators">
-          {projects.map((_, index) => (
-            <span 
-              key={index} 
-              className={`indicatorDot ${activeProject === index ? 'active' : ''}`}
-              onClick={() => {
-                if (projectsScrollerRef.current) {
-                  const cardWidth = projectsScrollerRef.current.querySelector('.projectCard')?.getBoundingClientRect().width || 480;
-                  const gap = 30;
-                  projectsScrollerRef.current.scrollTo({ left: index * (cardWidth + gap), behavior: 'smooth' });
-                }
-              }}
-              aria-label={`Ir al proyecto ${index + 1}`}
+          {projects.map((_, i) => (
+            <span
+              key={i}
+              className={`indicatorDot ${activeProject === i ? 'active' : ''}`}
+              onClick={() => scrollTo(projectsScrollerRef, '.projectCard', 30, i)}
+              aria-label={`Ir al proyecto ${i + 1}`}
             />
           ))}
         </div>
         <div className="centerAction">
-          <button 
-            className="button primary"
-            onClick={() => openTally()}
-          >
+          <button className="button primary" onClick={() => openTally()}>
             Solicitar diagnóstico gratuito
           </button>
         </div>
       </section>
 
+      {/* ── FAQ ─────────────────────────────────────────────────────────────── */}
       <section className="section faq" id="faq">
         <div className="sectionHead">
           <p className="eyebrow">FAQ</p>
@@ -982,21 +597,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section className="cta" id="contacto">
         <div className="cta-box">
           <h2>Tu negocio merece verse tan profesional como el servicio que das.</h2>
-          <p className="ctaText">Construyamos una presencia digital clara, moderna y funcional para que más clientes confíen en tu negocio y cierres tratos ágilmente.</p>
+          <p className="ctaText">
+            Construyamos una presencia digital clara, moderna y funcional para que más clientes confíen en tu negocio y cierres tratos ágilmente.
+          </p>
           <div className="heroActions ctaActions">
-            <button 
-              className="button primary"
-              onClick={() => openTally()}
-            >
+            <button className="button primary" onClick={() => openTally()}>
               Solicitar diagnóstico
             </button>
-            <a 
-              className="button ghost whatsappButton" 
-              href="https://wa.me/593984937364?text=Hola%20Juan%2C%20quiero%20hablar%20sobre%20el%20diagn%C3%B3stico%20de%20mi%20negocio%20de%20JV%20Studio" 
-              target="_blank" 
+            <a
+              className="button ghost whatsappButton"
+              href="https://wa.me/593984937364?text=Hola%20Juan%2C%20quiero%20hablar%20sobre%20el%20diagn%C3%B3stico%20de%20mi%20negocio%20de%20JV%20Studio"
+              target="_blank"
               rel="noopener noreferrer"
             >
               <svg className="whatsappIcon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -1008,6 +623,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="footer">
         <div className="footer-col">
           <span className="footerBrand">
@@ -1042,192 +658,12 @@ export default function Home() {
         <span>Ambato, Ecuador — Diseño digital claro para negocios reales.</span>
       </div>
 
-      {modalOpen && (
-        <div 
-          className="react-modal-overlay" 
-          onClick={closeTally}
-        >
-          <div 
-            className="react-modal-container"
-            onClick={(e) => e.stopPropagation()}
-            style={{ width: 'min(540px, 95vw)', height: 'auto', maxHeight: '92vh', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
-          >
-            {/* Header del modal */}
-            <div className="modalHeader" style={{ borderBottom: '1px solid var(--line)', background: 'var(--bg-2)', padding: '16px 20px' }}>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink)' }}>
-                Solicitar diagnóstico gratuito
-              </span>
-              <button 
-                onClick={closeTally}
-                aria-label="Cerrar modal" 
-                className="modalClose"
-                style={{ fontSize: '20px', lineHeight: 1 }}
-              >
-                &times;
-              </button>
-            </div>
-            
-            {!success ? (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '24px 28px', color: 'var(--ink)' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_name" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                    Nombre completo <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="react_name" 
-                    required 
-                    placeholder="ej. Juan Pérez" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    style={{ width: '100%', padding: '12px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--line)', borderRadius: '6px', color: 'var(--ink)', fontSize: '13px', outline: 'none' }}
-                  />
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_contact" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                    Email o WhatsApp <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
-                  <input 
-                    type="text" 
-                    id="react_contact" 
-                    required 
-                    placeholder="ej. juan@correo.com o +593984937364" 
-                    value={contactMethod}
-                    onChange={(e) => setContactMethod(e.target.value)}
-                    style={{ width: '100%', padding: '12px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--line)', borderRadius: '6px', color: 'var(--ink)', fontSize: '13px', outline: 'none' }}
-                  />
-                  <span style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '2px' }}>
-                    Ingresa uno de los dos. Si usas WhatsApp, incluye el código de país.
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_project" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                    Tipo de proyecto <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <select 
-                      id="react_project" 
-                      required 
-                      value={projectType}
-                      onChange={(e) => setProjectType(e.target.value)}
-                      style={{ width: '100%', padding: '12px 14px', background: 'var(--bg-2)', border: '1px solid var(--line)', borderRadius: '6px', color: 'var(--ink)', fontSize: '13px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23888888\' height=\'20\' viewBox=\'0 0 24 24\' width=\'20\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                    >
-                      <option value="" disabled>Selecciona una opción</option>
-                      <option value="Página web">Página web</option>
-                      <option value="Presencia digital">Presencia digital</option>
-                      <option value="Automatización">Automatización</option>
-                      <option value="Dashboard">Dashboard</option>
-                      <option value="No sé aún">No sé aún</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_budget" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                    Presupuesto aproximado <span style={{ color: 'var(--muted)', fontSize: '9px' }}>(Opcional)</span>
-                  </label>
-                  <div style={{ position: 'relative' }}>
-                    <select 
-                      id="react_budget" 
-                      value={budget}
-                      onChange={(e) => setBudget(e.target.value)}
-                      style={{ width: '100%', padding: '12px 14px', background: 'var(--bg-2)', border: '1px solid var(--line)', borderRadius: '6px', color: 'var(--ink)', fontSize: '13px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', backgroundImage: 'url("data:image/svg+xml;utf8,<svg fill=\'%23888888\' height=\'20\' viewBox=\'0 0 24 24\' width=\'20\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M7 10l5 5 5-5z\'/><path d=\'M0 0h24v24H0z\' fill=\'none\'/></svg>")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
-                    >
-                      <option value="">Prefiero no decir / A consultar</option>
-                      <option value="Menos de $500 USD">Menos de $500 USD</option>
-                      <option value="$500 - $1,000 USD">$500 - $1,000 USD</option>
-                      <option value="$1,000 - $2,500 USD">$1,000 - $2,500 USD</option>
-                      <option value="Más de $2,500 USD">Más de $2,500 USD</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_message" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)' }}>
-                    Mensaje breve <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
-                  <textarea 
-                    id="react_message" 
-                    required 
-                    rows={2} 
-                    placeholder="ej. Necesito estructurar la web de mi negocio y automatizar reservas." 
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    style={{ width: '100%', padding: '12px 14px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--line)', borderRadius: '6px', color: 'var(--ink)', fontSize: '13px', outline: 'none', fontFamily: 'inherit', resize: 'vertical', minHeight: '60px' }}
-                  />
-                </div>
-
-                {error && (
-                  <div style={{ color: '#ff6b6b', fontSize: '12px', marginTop: '4px' }}>
-                    {error}
-                  </div>
-                )}
-
-                <button 
-                  type="submit" 
-                  disabled={submitting}
-                  className="button primary" 
-                  style={{ width: '100%', padding: '12px', fontSize: '13px', textAlign: 'center', borderRadius: '6px', cursor: 'pointer', border: 'none', fontWeight: 'bold', background: '#ffffff', color: '#000000', marginTop: '6px' }}
-                >
-                  {submitting ? 'Enviando...' : 'Solicitar diagnóstico gratuito'}
-                </button>
-              </form>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '40px 24px', color: 'var(--ink)' }}>
-                <span style={{ fontSize: '40px', color: '#6dffb2', marginBottom: '12px' }}>✓</span>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '10px' }}>¡Diagnóstico solicitado!</h3>
-                <p style={{ color: 'var(--muted)', fontSize: '13px', lineHeight: 1.5, maxWidth: '360px', marginBottom: '20px' }}>
-                  Gracias por tu interés. Me pondré en contacto contigo lo antes posible para analizar tu negocio y coordinar el diagnóstico gratuito.
-                </p>
-                <button 
-                  onClick={closeTally} 
-                  className="button outline" 
-                  style={{ padding: '8px 20px', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.08em', cursor: 'pointer' }}
-                >
-                  Cerrar
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {isRedirecting && (
-        <div className="react-modal-overlay" style={{ zIndex: 100 }}>
-          <div 
-            className="react-modal-container"
-            style={{ 
-              width: 'min(440px, 90vw)', 
-              padding: '36px 28px', 
-              textAlign: 'center', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              gap: '18px',
-              border: '1px solid rgba(214, 255, 114, 0.15)',
-              background: 'rgba(7, 7, 7, 0.88)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              color: 'var(--ink)'
-            }}
-          >
-            <div className="whatsapp-spinner">
-              <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#25D366" strokeWidth="3" className="spinner-rotate">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.06)" />
-                <path d="M12 2a10 10 0 0 1 10 10" />
-              </svg>
-            </div>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', margin: 0, letterSpacing: '-0.01em' }}>
-              Conectando con WhatsApp...
-            </h3>
-            <p style={{ fontSize: '13px', color: 'var(--muted)', lineHeight: 1.55, margin: 0 }}>
-              No pudimos registrar tu solicitud en la base de datos temporal, pero no te preocupes. Te estamos redirigiendo directamente al chat de Juan por WhatsApp para enviarle tus datos y coordinar tu diagnóstico gratuito...
-            </p>
-          </div>
-        </div>
-      )}
+      {/* ── Contact Modal ───────────────────────────────────────────────────── */}
+      <ContactModal
+        isOpen={modalOpen}
+        initialProjectType={modalProjectType}
+        onClose={() => setModalOpen(false)}
+      />
     </main>
   );
 }
