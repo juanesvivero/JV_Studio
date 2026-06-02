@@ -227,7 +227,7 @@ export default function Home() {
       <section className="hero heroSplit" id="inicio">
         <div className="heroCopy">
           <p className="eyebrow">JV Studio / Ambato, Ecuador</p>
-          <h1>Tu negocio ya es bueno.</h1>
+          <h1>Páginas web y automatización para negocios que ya son buenos.</h1>
           <p className="lead">Hagamos que su presencia digital también lo sea.</p>
           <div className="heroActions">
             <a

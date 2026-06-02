@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { faqs } from './data/faqs';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jvstudio.ec';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jvstudio.vercel.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -66,15 +67,39 @@ export const viewport: Viewport = {
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'ProfessionalService',
-  name: 'JV Studio',
-  url: 'https://jvstudio.ec/',
-  description: 'Diseño de sitios web, automatizaciones y estructuras digitales para negocios.',
-  founder: { '@type': 'Person', name: 'Juan Esteban Vivero' },
-  areaServed: 'Ecuador',
-  sameAs: [
-    'https://instagram.com/juanesvivero',
-    'https://github.com/juanesvivero',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: `${siteUrl}/`,
+      name: 'JV Studio',
+      description: 'Diseño de sitios web, automatizaciones y estructuras digitales para negocios.',
+    },
+    {
+      '@type': 'ProfessionalService',
+      '@id': `${siteUrl}/#service`,
+      name: 'JV Studio',
+      url: `${siteUrl}/`,
+      description: 'Diseño de sitios web, automatizaciones y estructuras digitales para negocios.',
+      founder: { '@type': 'Person', name: 'Juan Esteban Vivero' },
+      areaServed: 'Ecuador',
+      sameAs: [
+        'https://instagram.com/juanesvivero',
+        'https://github.com/juanesvivero',
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${siteUrl}/#faq`,
+      mainEntity: faqs.map(([question, answer]) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: answer,
+        },
+      })),
+    },
   ],
 };
 

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jvstudio.ec/sitemap.xml
+Sitemap: https://jvstudio.vercel.app/sitemap.xml
