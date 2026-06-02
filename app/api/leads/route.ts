@@ -33,7 +33,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'Datos inválidos', issues: error.issues }, { status: 400 });
     }
 
-    const message = error instanceof Error ? error.message : 'Error interno';
-    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+    console.error('Lead submission failed:', error);
+    return NextResponse.json(
+      { ok: false, error: 'No pudimos registrar la solicitud en este momento.' },
+      { status: 500 }
+    );
   }
 }

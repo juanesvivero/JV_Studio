@@ -198,7 +198,7 @@ export default function Home() {
       <header className="nav">
         <a className="brand" href="#inicio" aria-label="Ir al inicio">
           <span className="brandMark">
-            <Image src="/jv-studio-logo.png" alt="" width={180} height={52} priority />
+            <Image src="/jv-studio-logo.webp" alt="JV Studio - Páginas web y sistemas digitales" width={180} height={52} priority />
           </span>
         </a>
         <nav>
@@ -252,7 +252,7 @@ export default function Home() {
             </div>
             <div className="mockNav">
               <span className="mockBrand">
-                <Image src="/jv-studio-logo.png" alt="" width={120} height={35} />
+                <Image src="/jv-studio-logo.webp" alt="Logotipo de JV Studio" width={120} height={35} />
               </span>
               <div className="mockNavLinks">
                 <span>Servicios</span>
@@ -375,11 +375,13 @@ export default function Home() {
         </div>
         <div className="carouselIndicators servicesIndicators">
           {services.map((_, i) => (
-            <span
+            <button
+              type="button"
               key={i}
               className={`indicatorDot ${activeService === i ? 'active' : ''}`}
               onClick={() => scrollTo(scrollerRef, '.serviceCard', 20, i)}
               aria-label={`Ir al servicio ${i + 1}`}
+              aria-current={activeService === i ? 'true' : undefined}
             />
           ))}
         </div>
@@ -450,11 +452,13 @@ export default function Home() {
         </div>
         <div className="carouselIndicators">
           {[0, 1, 2].map((i) => (
-            <span
+            <button
+              type="button"
               key={i}
               className={`indicatorDot ${activeWhy === i ? 'active' : ''}`}
               onClick={() => scrollTo(whyScrollerRef, '.differentiatorCard', 16, i)}
               aria-label={`Ir al diferenciador ${i + 1}`}
+              aria-current={activeWhy === i ? 'true' : undefined}
             />
           ))}
         </div>
@@ -477,11 +481,13 @@ export default function Home() {
         </div>
         <div className="carouselIndicators">
           {processSteps.map((_, i) => (
-            <span
+            <button
+              type="button"
               key={i}
               className={`indicatorDot ${activeStep === i ? 'active' : ''}`}
               onClick={() => scrollTo(stepsScrollerRef, '.step', 20, i)}
               aria-label={`Ir al paso ${i + 1}`}
+              aria-current={activeStep === i ? 'true' : undefined}
             />
           ))}
         </div>
@@ -526,17 +532,16 @@ export default function Home() {
                 <div className={`projectLogoWrapper ${['portfolio', 'natupet'].includes(project.type) ? 'portfolioFrame' : ''}`}>
                   {project.logoAlt ? (
                     <div className="logo-container">
-                      <Image src={project.logo} alt="" className="rotating-logo logo-1" width={360} height={120} priority />
-                      <Image src={project.logoAlt} alt="" className="rotating-logo logo-2" width={360} height={120} priority />
+                      <Image src={project.logo} alt={project.imageAlt} className="rotating-logo logo-1" width={360} height={120} />
+                      <Image src={project.logoAlt} alt={project.imageAlt2 || project.title} className="rotating-logo logo-2" width={360} height={120} />
                     </div>
                   ) : project.logo ? (
                     <Image
                       src={project.logo}
-                      alt=""
+                      alt={project.imageAlt}
                       className={['portfolio', 'natupet'].includes(project.type) ? `portfolioPreviewImage ${project.type}Image` : 'plateLogo'}
                       width={['portfolio', 'natupet'].includes(project.type) ? 600 : 360}
                       height={['portfolio', 'natupet'].includes(project.type) ? 340 : 120}
-                      priority
                     />
                   ) : (
                     <div className="textLogo" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.1 }}>
@@ -569,11 +574,13 @@ export default function Home() {
         </div>
         <div className="carouselIndicators projectsIndicators">
           {projects.map((_, i) => (
-            <span
+            <button
+              type="button"
               key={i}
               className={`indicatorDot ${activeProject === i ? 'active' : ''}`}
               onClick={() => scrollTo(projectsScrollerRef, '.projectCard', 30, i)}
               aria-label={`Ir al proyecto ${i + 1}`}
+              aria-current={activeProject === i ? 'true' : undefined}
             />
           ))}
         </div>
@@ -627,7 +634,7 @@ export default function Home() {
       <footer className="footer">
         <div className="footer-col">
           <span className="footerBrand">
-            <Image src="/jv-studio-logo.png" alt="" width={180} height={52} />
+            <Image src="/jv-studio-logo.webp" alt="JV Studio - Páginas web y sistemas digitales" width={180} height={52} />
           </span>
           <p>Diseño web, automatización y presencia digital para negocios modernos.</p>
         </div>

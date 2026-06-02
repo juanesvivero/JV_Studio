@@ -11,6 +11,8 @@ export interface Project {
   type: string;
   logo: string;
   logoAlt?: string;
+  imageAlt: string;
+  imageAlt2?: string;
 }
 
 export const projects: Project[] = [
@@ -25,6 +27,7 @@ export const projects: Project[] = [
     accent: 'rose',
     type: 'security',
     logo: '/security_logo_transparent-mobile.webp',
+    imageAlt: 'Sitio web Click Line Security diseñado por JV Studio',
   },
   {
     title: 'Click Line Solutions / RunFood App',
@@ -37,7 +40,9 @@ export const projects: Project[] = [
     accent: 'gold',
     type: 'solutions',
     logo: '/solutions_logo_transparent.webp',
-    logoAlt: '/RunFoodLogo.png',
+    logoAlt: '/RunFoodLogo-mobile.webp',
+    imageAlt: 'Logotipo de Click Line Solutions - Empresa de desarrollo de software',
+    imageAlt2: 'Logotipo de RunFood App - Sistema de punto de venta (POS) para restaurantes',
   },
   {
     title: 'Portafolio Web — Amelia Padilla',
@@ -49,7 +54,8 @@ export const projects: Project[] = [
     href: 'https://portafolio-ame-padilla.vercel.app/',
     accent: 'blue',
     type: 'portfolio',
-    logo: '/Portafolio_Amelia_Padilla.png',
+    logo: '/Portafolio_Amelia_Padilla.webp',
+    imageAlt: 'Vista previa de la landing page del portafolio web de Amelia Padilla diseñado por JV Studio',
   },
   {
     title: 'NatuPet',
@@ -61,7 +67,8 @@ export const projects: Project[] = [
     href: 'https://natu-pet.vercel.app/#/',
     accent: 'green',
     type: 'natupet',
-    logo: '/NatuPet.png',
+    logo: '/NatuPet.webp',
+    imageAlt: 'Proyecto NatuPet, tienda digital para productos naturales de mascotas',
   },
   {
     title: 'La Mila',
@@ -73,6 +80,7 @@ export const projects: Project[] = [
     href: 'https://lamila.vercel.app/',
     accent: 'amber',
     type: 'lamila',
-    logo: '/LaMila.png',
+    logo: '/LaMila.webp',
+    imageAlt: 'Vista previa del diseño del sitio web del restaurante gastronómico La Mila',
   },
 ];

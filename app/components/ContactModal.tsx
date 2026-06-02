@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -55,23 +55,38 @@ export default function ContactModal({ isOpen, initialProjectType = '', onClose 
   const [error, setError] = useState('');
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Sync projectType when parent changes it (e.g. clicking a service CTA)
-  // We reset form state when the modal opens fresh
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactMethod.trim());
+  const isPhone = contactMethod.trim().length >= 7 && /^[+]?[0-9\s\-()]+$/.test(contactMethod.trim());
+  const contactIsValid = isEmail || isPhone;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setProjectType(initialProjectType);
+    setError('');
+    setSuccess(false);
+  }, [initialProjectType, isOpen]);
+
   const handleClose = () => {
     setSuccess(false);
+    setError('');
     onClose();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!contactIsValid) {
+      setError('Por favor, ingresa un correo electrónico o un número de WhatsApp válido.');
+      return;
+    }
+
     setSubmitting(true);
 
-    const isEmail = contactMethod.includes('@');
     const payload = {
       name,
-      email: isEmail ? contactMethod : '',
-      phone: !isEmail ? contactMethod : '',
+      email: isEmail ? contactMethod.trim() : '',
+      phone: isPhone ? contactMethod.trim() : '',
       projectType: projectType || 'No sé aún',
       message: message + (budget ? ` [Presupuesto: ${budget}]` : ''),
       budget,
@@ -144,9 +159,26 @@ export default function ContactModal({ isOpen, initialProjectType = '', onClose 
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_contact" style={LABEL_STYLE}>
-                    Email o WhatsApp <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label htmlFor="react_contact" style={LABEL_STYLE}>
+                      Email o WhatsApp <span style={{ color: 'var(--rose)' }}>*</span>
+                    </label>
+                    {contactMethod.trim().length > 0 && (
+                      isEmail ? (
+                        <span style={{ fontSize: '9px', color: '#6dffb2', fontFamily: 'JetBrains Mono, monospace', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '3px', fontWeight: 'bold', background: 'rgba(109, 255, 178, 0.08)', padding: '2px 6px', borderRadius: '4px' }}>
+                          ✓ Email
+                        </span>
+                      ) : isPhone ? (
+                        <span style={{ fontSize: '9px', color: '#6dffb2', fontFamily: 'JetBrains Mono, monospace', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '3px', fontWeight: 'bold', background: 'rgba(109, 255, 178, 0.08)', padding: '2px 6px', borderRadius: '4px' }}>
+                          ✓ WhatsApp
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '9px', color: '#ff6b6b', fontFamily: 'JetBrains Mono, monospace', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '3px', background: 'rgba(255, 107, 107, 0.08)', padding: '2px 6px', borderRadius: '4px' }}>
+                          ⚠ Inválido
+                        </span>
+                      )
+                    )}
+                  </div>
                   <input
                     type="text"
                     id="react_contact"
@@ -205,13 +237,19 @@ export default function ContactModal({ isOpen, initialProjectType = '', onClose 
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label htmlFor="react_message" style={LABEL_STYLE}>
-                    Mensaje breve <span style={{ color: 'var(--rose)' }}>*</span>
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label htmlFor="react_message" style={LABEL_STYLE}>
+                      Mensaje breve <span style={{ color: 'var(--rose)' }}>*</span>
+                    </label>
+                    <span style={{ fontSize: '9px', color: message.length > 2000 ? '#ff6b6b' : 'var(--muted)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      {message.length} / 2000
+                    </span>
+                  </div>
                   <textarea
                     id="react_message"
                     required
                     rows={2}
+                    maxLength={2000}
                     placeholder="ej. Necesito estructurar la web de mi negocio y automatizar reservas."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

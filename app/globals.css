@@ -2298,8 +2298,8 @@ textarea:focus { border-color: var(--accent); }
 }
 
 .projectThumb.portfolio .projectLogoWrapper.portfolioFrame {
-  padding: 0;
-  overflow: hidden;
+  padding: clamp(14px, 2.4vw, 26px);
+  overflow: visible;
 }
 
 .projectThumb.lamila .projectLogoWrapper {
@@ -2313,6 +2313,10 @@ textarea:focus { border-color: var(--accent); }
 .projectThumb:hover .projectLogoWrapper.portfolioWrapper,
 .projectThumb:hover .projectLogoWrapper.portfolioFrame {
   transform: scale(1.03); /* Lighter scale for full images */
+}
+
+.projectThumb.portfolio:hover .projectLogoWrapper.portfolioFrame {
+  transform: none;
 }
 
 /* Imagen completa para portafolios (Web Preview) */
@@ -2342,13 +2346,14 @@ textarea:focus { border-color: var(--accent); }
 
 .portfolioPreviewImage.portfolioImage {
   width: 100%;
-  height: 100%;
+  height: auto;
   max-height: none;
-  object-fit: cover;
-  object-position: 50% center;
-  border-radius: 0;
-  box-shadow: none;
-  transform: scale(1.06);
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(20, 15, 12, 0.08);
 }
 
 .portfolioPreviewImage.natupetImage {
@@ -2840,14 +2845,18 @@ textarea:focus { border-color: var(--accent); }
 .indicatorDot {
   width: 8px;
   height: 8px;
+  padding: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.04);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  appearance: none;
+  font: inherit;
 }
 
-.indicatorDot.active {
+.indicatorDot.active,
+.indicatorDot[aria-current="true"] {
   width: 24px;
   background: var(--accent);
   border-color: rgba(214, 255, 114, 0.2);
